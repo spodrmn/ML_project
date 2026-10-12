@@ -24,7 +24,7 @@ kmeans.fit(df)
 # Clusters after K-Means
 plt.figure(2)
 sns.scatterplot(data=df, x='Offense', y='Defense', hue=kmeans.labels_)
-plt.title("After K-Means")
+plt.title("After K-Means (k=3)")
 
 
 # Now I'll run K-Means for different values of k and plot their inertia
