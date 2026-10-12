@@ -34,4 +34,12 @@ print(features_mmscaled)
 
 # As far as I can tell it seems correct. I will proceed.
 
-# Standard scaling is x minus mean divided by standard deviation
+# Standard scaling is x minus mean divided by standard deviation.
+# Pandas lets you use the mean and standard deviation of each column, nice.
+# IMPORTANT! I used population standard deviation (that's what the ddof=0 means), otherwise you might get different results.
+
+features_stscaled = (df_features - df_features.mean()) / \
+    df_features.std(ddof=0)
+
+print("\nThese are the dataset's features, normalized by Standard Scaling:'\n")
+print(features_stscaled)
