@@ -26,4 +26,24 @@ plt.figure(2)
 sns.scatterplot(data=df, x='Offense', y='Defense', hue=kmeans.labels_)
 plt.title("After K-Means")
 
+
+# Now I'll run K-Means for different values of k and plot their inertia
+
+# I will store each k-inertia pair in a dictionary then turn that into a dataframe then plot it.
+
+data_list = []
+
+for i in range(1, 10):
+    kmeans = KMeans(n_clusters=i, random_state=0, n_init='auto')
+    kmeans.fit(df)
+    inert = kmeans.inertia_
+
+    data_list.append({'k': i, 'inertia': inert})
+
+elbow_graph = pd.DataFrame(data_list)
+
+plt.figure(3)
+sns.scatterplot(data=elbow_graph, x='k', y='inertia')
+plt.title("Elbow Method Graph")
+
 plt.show()
