@@ -11,3 +11,14 @@ print("This is the original dataset:\n")
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 print(df)
+
+# We have to separate the non-integer values.
+# For the sake of my sanity, I will assume our dataset will have all labels on the last column.
+
+df_features = df.iloc[:, :-1]
+
+# I will print to check.
+
+print("\nThese are the dataset's features, separated for normalization.'\n")
+
+print(df_features)
