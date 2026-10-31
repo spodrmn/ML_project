@@ -8,6 +8,9 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+
 
 print(" -----------------------------------PART 1: NORMALIZATION-------------------------------------------\n")
 
@@ -149,10 +152,7 @@ plt.show()
 
 print("\n Random Forest Classification")
 
-
-# ==========================================
 # D1 (Original) - Random Forest
-# ==========================================
 X_d1 = D1.iloc[:, :-1]
 y_d1 = D1.iloc[:, -1]
 
@@ -163,10 +163,7 @@ rf1 = RandomForestClassifier(random_state=42)
 rf1.fit(X_train_d1, y_train_d1)
 pred_rf_d1 = rf1.predict(X_test_d1)
 
-
-# ==========================================
 # D2 (Min-Max Scaled) - Random Forest
-# ==========================================
 X_d2 = D2.iloc[:, :-1]
 y_d2 = D2.iloc[:, -1]
 
@@ -177,10 +174,8 @@ rf2 = RandomForestClassifier(random_state=42)
 rf2.fit(X_train_d2, y_train_d2)
 pred_rf_d2 = rf2.predict(X_test_d2)
 
-
-# ==========================================
 # D3 (Standard Scaled) - Random Forest
-# ==========================================
+
 X_d3 = D3.iloc[:, :-1]
 y_d3 = D3.iloc[:, -1]
 
@@ -232,4 +227,102 @@ axes[2].set_ylabel('True Label')
 
 # Display the graphics
 plt.tight_layout()
+plt.show()
+
+
+print("\n-----------------------------------PART 3: CLUSTERING-------------------------------------------")
+K_range = range(2, 10)
+# CLUSTERING FOR D1 (Original Dataset)
+X_d1 = D1.iloc[:, :-1]  # Drop label column
+
+inertias_d1 = []
+silhouettes_d1 = []
+best_k_d1 = 2
+best_sil_score_d1 = -1
+
+for k in K_range:
+    kmeans_temp = KMeans(n_clusters=k, random_state=42, n_init='auto')
+    kmeans_temp.fit(X_d1)
+
+    inertias_d1.append(kmeans_temp.inertia_)
+    sil_score = silhouette_score(X_d1, kmeans_temp.labels_)
+    silhouettes_d1.append(sil_score)
+
+    if sil_score > best_sil_score_d1:
+        best_sil_score_d1 = sil_score
+        best_k_d1 = k
+
+# Final D1 Model & Plot
+final_kmeans_d1 = KMeans(n_clusters=best_k_d1, random_state=42, n_init='auto')
+final_kmeans_d1.fit(X_d1)
+
+plt.figure(figsize=(8, 6))
+sns.scatterplot(data=D1, x='win_shares', y='average_minutes_played',
+                hue=final_kmeans_d1.labels_, palette='viridis')
+plt.title(
+    f"D1 Final Clusters (k={best_k_d1} | Silhouette Score: {best_sil_score_d1:.4f})")
+plt.show()
+
+
+# CLUSTERING FOR D2 (Min-Max Scaled)
+X_d2 = D2.iloc[:, :-1]  # Drop label column
+
+inertias_d2 = []
+silhouettes_d2 = []
+best_k_d2 = 2
+best_sil_score_d2 = -1
+
+for k in K_range:
+    kmeans_temp = KMeans(n_clusters=k, random_state=42, n_init='auto')
+    kmeans_temp.fit(X_d2)
+
+    inertias_d2.append(kmeans_temp.inertia_)
+    sil_score = silhouette_score(X_d2, kmeans_temp.labels_)
+    silhouettes_d2.append(sil_score)
+
+    if sil_score > best_sil_score_d2:
+        best_sil_score_d2 = sil_score
+        best_k_d2 = k
+
+# Final D2 Model & Plot
+final_kmeans_d2 = KMeans(n_clusters=best_k_d2, random_state=42, n_init='auto')
+final_kmeans_d2.fit(X_d2)
+
+plt.figure(figsize=(8, 6))
+sns.scatterplot(data=D2, x='win_shares', y='average_minutes_played',
+                hue=final_kmeans_d2.labels_, palette='viridis')
+plt.title(
+    f"D2 Final Clusters (k={best_k_d2} | Silhouette Score: {best_sil_score_d2:.4f})")
+plt.show()
+
+
+# CLUSTERING FOR D3 (Standard Scaled)
+X_d3 = D3.iloc[:, :-1]  # Drop label column
+
+inertias_d3 = []
+silhouettes_d3 = []
+best_k_d3 = 2
+best_sil_score_d3 = -1
+
+for k in K_range:
+    kmeans_temp = KMeans(n_clusters=k, random_state=42, n_init='auto')
+    kmeans_temp.fit(X_d3)
+
+    inertias_d3.append(kmeans_temp.inertia_)
+    sil_score = silhouette_score(X_d3, kmeans_temp.labels_)
+    silhouettes_d3.append(sil_score)
+
+    if sil_score > best_sil_score_d3:
+        best_sil_score_d3 = sil_score
+        best_k_d3 = k
+
+# Final D3 Model & Plot
+final_kmeans_d3 = KMeans(n_clusters=best_k_d3, random_state=42, n_init='auto')
+final_kmeans_d3.fit(X_d3)
+
+plt.figure(figsize=(8, 6))
+sns.scatterplot(data=D3, x='win_shares', y='average_minutes_played',
+                hue=final_kmeans_d3.labels_, palette='viridis')
+plt.title(
+    f"D3 Final Clusters (k={best_k_d3} | Silhouette Score: {best_sil_score_d3:.4f})")
 plt.show()
