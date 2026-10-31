@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
 
 print(" -----------------------------------PART 1: NORMALIZATION-------------------------------------------\n")
 
@@ -62,45 +63,173 @@ print("\n-----------------------------------PART 2: CLASSIFICATION--------------
 # They will be implemented with sklearn
 
 # Running K Nearest Neighbors:
-# First, we'll find the optimal value for K for each test type using GridSearchCV
+# We will use k=3, since it performed the best during our testing (using elbow method to check)
 
-print("\n K Nearest Neighbors")
-print("\n Looking for the optimal K value for each datasetusing GridSearchCV:")
+print("\n K Nearest Neighbors (k=3)")
 
-datasets = {
-    'D1 (Original)': D1,
-    'D2 (Min-Max Scaled)': D2,
-    'D3 (Standard Scaled)': D3
-}
+# D1 (Original)
+X_d1 = D1.iloc[:, :-1]
+y_d1 = D1.iloc[:, -1]
 
-for name, data in datasets.items():
-    print(f"-------- {name} --------")
+# Split into training and testing sets
+X_train_d1, X_test_d1, y_train_d1, y_test_d1 = train_test_split(
+    X_d1, y_d1, test_size=0.2, random_state=42)
 
-    # Separate features (X) and label (y) for this specific dataset
-    X = data.iloc[:, :-1]
-    y = data.iloc[:, -1]
+knn1 = KNeighborsClassifier(n_neighbors=3)
+knn1.fit(X_train_d1, y_train_d1)        # Train only on the training set
+pred_d1 = knn1.predict(X_test_d1)       # Predict only on the testing set
 
-    # Split into 80% training and 20% testing sets
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42)
 
-    # Setup GridSearchCV to find the best K between 1 and 30
-    param_grid = {'n_neighbors': np.arange(1, 31)}
-    knn_grid = GridSearchCV(KNeighborsClassifier(),
-                            param_grid, cv=5, scoring='accuracy')
+# D2 (Min-Max Scaled)
+X_d2 = D2.iloc[:, :-1]
+y_d2 = D2.iloc[:, -1]
 
-    # Train the models and find the optimal K
-    knn_grid.fit(X_train, y_train)
-    best_k = knn_grid.best_params_['n_neighbors']
+X_train_d2, X_test_d2, y_train_d2, y_test_d2 = train_test_split(
+    X_d2, y_d2, test_size=0.2, random_state=42)
 
-    # Extract the absolute best model and make predictions on the test set
-    best_model = knn_grid.best_estimator_
-    y_pred = best_model.predict(X_test)
+knn2 = KNeighborsClassifier(n_neighbors=3)
+knn2.fit(X_train_d2, y_train_d2)
+pred_d2 = knn2.predict(X_test_d2)
 
-    # Calculate accuracy
-    acc = accuracy_score(y_test, y_pred)
 
-    print(f"Optimal K: {best_k}")
-    print("\n")
+# D3 (Standard Scaled)
+X_d3 = D3.iloc[:, :-1]
+y_d3 = D3.iloc[:, -1]
 
-print("\nNow we'll run KNN with the values we calculated for each of the datasets\n")
+X_train_d3, X_test_d3, y_train_d3, y_test_d3 = train_test_split(
+    X_d3, y_d3, test_size=0.2, random_state=42)
+
+knn3 = KNeighborsClassifier(n_neighbors=3)
+knn3.fit(X_train_d3, y_train_d3)
+pred_d3 = knn3.predict(X_test_d3)
+
+
+print("D1 Predictions (First 20):")
+print(pred_d1[:20])
+
+print("\nD2 Predictions (First 20):")
+print(pred_d2[:20])
+
+print("\nD3 Predictions (First 20):")
+print(pred_d3[:20])
+
+# Generating confusion matrices for each
+cm_d1 = confusion_matrix(y_test_d1, pred_d1)
+cm_d2 = confusion_matrix(y_test_d2, pred_d2)
+cm_d3 = confusion_matrix(y_test_d3, pred_d3)
+
+# Get the unique class labels (e.g., 'First', 'Second') to label the boxes
+labels = knn1.classes_
+
+# Set up a plotting area with 3 subplots side-by-side
+fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+sns.heatmap(cm_d1, annot=True, fmt='d', cmap='Blues',
+            xticklabels=labels, yticklabels=labels, ax=axes[0])
+axes[0].set_title('D1 (Original) - KNN')
+axes[0].set_xlabel('Predicted Label')
+axes[0].set_ylabel('True Label')
+
+sns.heatmap(cm_d2, annot=True, fmt='d', cmap='Greens',
+            xticklabels=labels, yticklabels=labels, ax=axes[1])
+axes[1].set_title('D2 (Min-Max Scaled) - KNN')
+axes[1].set_xlabel('Predicted Label')
+axes[1].set_ylabel('True Label')
+
+sns.heatmap(cm_d3, annot=True, fmt='d', cmap='Oranges',
+            xticklabels=labels, yticklabels=labels, ax=axes[2])
+axes[2].set_title('D3 (Standard Scaled) - KNN')
+axes[2].set_xlabel('Predicted Label')
+axes[2].set_ylabel('True Label')
+
+# Display the graphics
+plt.tight_layout()
+plt.show()
+
+
+print("\n Random Forest Classification")
+
+
+# ==========================================
+# D1 (Original) - Random Forest
+# ==========================================
+X_d1 = D1.iloc[:, :-1]
+y_d1 = D1.iloc[:, -1]
+
+X_train_d1, X_test_d1, y_train_d1, y_test_d1 = train_test_split(
+    X_d1, y_d1, test_size=0.2, random_state=42)
+
+rf1 = RandomForestClassifier(random_state=42)
+rf1.fit(X_train_d1, y_train_d1)
+pred_rf_d1 = rf1.predict(X_test_d1)
+
+
+# ==========================================
+# D2 (Min-Max Scaled) - Random Forest
+# ==========================================
+X_d2 = D2.iloc[:, :-1]
+y_d2 = D2.iloc[:, -1]
+
+X_train_d2, X_test_d2, y_train_d2, y_test_d2 = train_test_split(
+    X_d2, y_d2, test_size=0.2, random_state=42)
+
+rf2 = RandomForestClassifier(random_state=42)
+rf2.fit(X_train_d2, y_train_d2)
+pred_rf_d2 = rf2.predict(X_test_d2)
+
+
+# ==========================================
+# D3 (Standard Scaled) - Random Forest
+# ==========================================
+X_d3 = D3.iloc[:, :-1]
+y_d3 = D3.iloc[:, -1]
+
+X_train_d3, X_test_d3, y_train_d3, y_test_d3 = train_test_split(
+    X_d3, y_d3, test_size=0.2, random_state=42)
+
+rf3 = RandomForestClassifier(random_state=42)
+rf3.fit(X_train_d3, y_train_d3)
+pred_rf_d3 = rf3.predict(X_test_d3)
+
+
+print("D1 Random Forest Predictions (First 20):")
+print(pred_rf_d1[:20])
+
+print("\nD2 Random Forest Predictions (First 20):")
+print(pred_rf_d2[:20])
+
+print("\nD3 Random Forest Predictions (First 20):")
+print(pred_rf_d3[:20])
+
+# Generating confusion matrices for each
+cm_rf_d1 = confusion_matrix(y_test_d1, pred_rf_d1)
+cm_rf_d2 = confusion_matrix(y_test_d2, pred_rf_d2)
+cm_rf_d3 = confusion_matrix(y_test_d3, pred_rf_d3)
+
+# Get the unique class labels (e.g., 'First', 'Second') to label the boxes
+labels = rf1.classes_
+
+# Set up a plotting area with 3 subplots side-by-side
+fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+sns.heatmap(cm_rf_d1, annot=True, fmt='d', cmap='Blues',
+            xticklabels=labels, yticklabels=labels, ax=axes[0])
+axes[0].set_title('D1 (Original) - Random Forest')
+axes[0].set_xlabel('Predicted Label')
+axes[0].set_ylabel('True Label')
+
+sns.heatmap(cm_rf_d2, annot=True, fmt='d', cmap='Greens',
+            xticklabels=labels, yticklabels=labels, ax=axes[1])
+axes[1].set_title('D2 (Min-Max Scaled) - Random Forest')
+axes[1].set_xlabel('Predicted Label')
+axes[1].set_ylabel('True Label')
+
+sns.heatmap(cm_rf_d3, annot=True, fmt='d', cmap='Oranges',
+            xticklabels=labels, yticklabels=labels, ax=axes[2])
+axes[2].set_title('D3 (Standard Scaled) - Random Forest')
+axes[2].set_xlabel('Predicted Label')
+axes[2].set_ylabel('True Label')
+
+# Display the graphics
+plt.tight_layout()
+plt.show()
