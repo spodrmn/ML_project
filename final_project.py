@@ -68,7 +68,8 @@ X_d1 = D1.iloc[:, :-1]
 y_d1 = D1.iloc[:, -1]
 
 # Split into training and testing sets
-# Added startify=y_d1 to ensure that the class distribution is preserved in both training and testing sets
+# Added startify=y_dx to all training sets 
+# to ensure that the class distribution is preserved in both training and testing sets
 X_train_d1, X_test_d1, y_train_d1, y_test_d1 = train_test_split(
     X_d1, y_d1, test_size=0.2, random_state=42, stratify=y_d1)
 
@@ -82,7 +83,7 @@ X_d2 = D2.iloc[:, :-1]
 y_d2 = D2.iloc[:, -1]
 
 X_train_d2, X_test_d2, y_train_d2, y_test_d2 = train_test_split(
-    X_d2, y_d2, test_size=0.2, random_state=42)
+    X_d2, y_d2, test_size=0.2, random_state=42, stratify=y_d2)
 
 knn2 = KNeighborsClassifier(n_neighbors=3)
 knn2.fit(X_train_d2, y_train_d2)
@@ -94,7 +95,7 @@ X_d3 = D3.iloc[:, :-1]
 y_d3 = D3.iloc[:, -1]
 
 X_train_d3, X_test_d3, y_train_d3, y_test_d3 = train_test_split(
-    X_d3, y_d3, test_size=0.2, random_state=42)
+    X_d3, y_d3, test_size=0.2, random_state=42, stratify=y_d3)
 
 knn3 = KNeighborsClassifier(n_neighbors=3)
 knn3.fit(X_train_d3, y_train_d3)
