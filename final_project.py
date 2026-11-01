@@ -162,7 +162,7 @@ X_d1 = D1.iloc[:, :-1]
 y_d1 = D1.iloc[:, -1]
 
 X_train_d1, X_test_d1, y_train_d1, y_test_d1 = train_test_split(
-    X_d1, y_d1, test_size=0.2, random_state=42)
+    X_d1, y_d1, test_size=0.2, random_state=42, stratify=y_d1)
 
 rf1 = RandomForestClassifier(random_state=42)
 rf1.fit(X_train_d1, y_train_d1)
@@ -173,7 +173,7 @@ X_d2 = D2.iloc[:, :-1]
 y_d2 = D2.iloc[:, -1]
 
 X_train_d2, X_test_d2, y_train_d2, y_test_d2 = train_test_split(
-    X_d2, y_d2, test_size=0.2, random_state=42)
+    X_d2, y_d2, test_size=0.2, random_state=42, stratify=y_d2)
 
 rf2 = RandomForestClassifier(random_state=42)
 rf2.fit(X_train_d2, y_train_d2)
@@ -185,7 +185,7 @@ X_d3 = D3.iloc[:, :-1]
 y_d3 = D3.iloc[:, -1]
 
 X_train_d3, X_test_d3, y_train_d3, y_test_d3 = train_test_split(
-    X_d3, y_d3, test_size=0.2, random_state=42)
+    X_d3, y_d3, test_size=0.2, random_state=42, stratify=y_d3)
 
 rf3 = RandomForestClassifier(random_state=42)
 rf3.fit(X_train_d3, y_train_d3)
