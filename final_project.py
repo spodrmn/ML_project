@@ -15,47 +15,40 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 print("-----------------------------------PART 1: NORMALIZATION-------------------------------------------")
 
-D1 = pd.read_csv("final_dataset.csv")
+# Read the dataset
+df = pd.read_csv("final_dataset.csv")
+
+# D1 - Original Dataset
+D1 = df.copy()
 
 # Separate features and target
-df_features = D1.drop(columns=["round"])
-df_labels = D1["round"]
+df_features = df.iloc[:, :-1]
+df_target = df.iloc[:, -1]
 
-# D1: Original dataset
-D1 = df_features.copy()
-D1["round"] = df_labels
-
-# D2: Min-Max Scaling
+# D2 - Min-Max Scaled Dataset
 minmax_scaler = MinMaxScaler()
 
-features_mmscaled = pd.DataFrame(
-    minmax_scaler.fit_transform(df_features),
-    columns=df_features.columns
-)
+D2_features = minmax_scaler.fit_transform(df_features)
 
-D2 = features_mmscaled.copy()
-D2["round"] = df_labels.values
+D2 = pd.DataFrame(D2_features, columns=df_features.columns)
+D2["round"] = df_target.values
 
-# D3: Standard Scaling
+# D3 - Standard Scaled Dataset
 standard_scaler = StandardScaler()
 
-features_stscaled = pd.DataFrame(
-    standard_scaler.fit_transform(df_features),
-    columns=df_features.columns
-)
+D3_features = standard_scaler.fit_transform(df_features)
 
-D3 = features_stscaled.copy()
-D3["round"] = df_labels.values
+D3 = pd.DataFrame(D3_features, columns=df_features.columns)
+D3["round"] = df_target.values
 
-# Printed Head first so that whole dataset is not printed
-# only the first 5 rows of each dataset are printed for clarity (amazing)
-print("Original Dataset (D1):")
+# Display the first 5 rows of each dataset
+print("\nD1 - Original Dataset")
 print(D1.head())
 
-print("\nMin-Max Scaled Dataset (D2):")
+print("\nD2 - Min-Max Scaled Dataset")
 print(D2.head())
 
-print("\nStandard Scaled Dataset (D3):")
+print("\nD3 - Standard Scaled Dataset")
 print(D3.head())
 
 
@@ -75,8 +68,9 @@ X_d1 = D1.iloc[:, :-1]
 y_d1 = D1.iloc[:, -1]
 
 # Split into training and testing sets
+# Added startify=y_d1 to ensure that the class distribution is preserved in both training and testing sets
 X_train_d1, X_test_d1, y_train_d1, y_test_d1 = train_test_split(
-    X_d1, y_d1, test_size=0.2, random_state=42)
+    X_d1, y_d1, test_size=0.2, random_state=42, stratify=y_d1)
 
 knn1 = KNeighborsClassifier(n_neighbors=3)
 knn1.fit(X_train_d1, y_train_d1)        # Train only on the training set
