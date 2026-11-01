@@ -10,53 +10,53 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 
-print(" -----------------------------------PART 1: NORMALIZATION-------------------------------------------\n")
-
+print("-----------------------------------PART 1: NORMALIZATION-------------------------------------------")
 
 D1 = pd.read_csv("final_dataset.csv")
 
-# printing original table
+# Separate features and target
+df_features = D1.drop(columns=["round"])
+df_labels = D1["round"]
 
-print("This is the original dataset(D1):\n")
+# D1: Original dataset
+D1 = df_features.copy()
+D1["round"] = df_labels
 
-# This shows all rows and columns.
-pd.set_option('display.max_rows', 20)
-pd.set_option('display.max_columns', 10)
+# D2: Min-Max Scaling
+minmax_scaler = MinMaxScaler()
 
-print(D1)
+features_mmscaled = pd.DataFrame(
+    minmax_scaler.fit_transform(df_features),
+    columns=df_features.columns
+)
 
-# We have to separate the non-integer values, which are all located in the last column in this data set.
+D2 = features_mmscaled.copy()
+D2["round"] = df_labels.values
 
-df_features = D1.iloc[:, :-1]
-df_labels = D1.iloc[:, -1]
+# D3: Standard Scaling
+standard_scaler = StandardScaler()
 
-# Now, we will perform min-max scaling.
+features_stscaled = pd.DataFrame(
+    standard_scaler.fit_transform(df_features),
+    columns=df_features.columns
+)
 
-features_mmscaled = (df_features - df_features.min()) / \
-    (df_features.max() - df_features.min())
+D3 = features_stscaled.copy()
+D3["round"] = df_labels.values
 
-features_mmscaled['round'] = df_labels.values
+# Printed Head first so that whole dataset is not printed
+# only the first 5 rows of each dataset are printed for clarity (amazing)
+print("Original Dataset (D1):")
+print(D1.head())
 
-D2 = features_mmscaled
+print("\nMin-Max Scaled Dataset (D2):")
+print(D2.head())
 
-print("\nThese are the dataset's features, normalized by Min-Max Scaling(D2):'\n")
-print(D2)
-
-# Standard scaling is x minus mean divided by standard deviation.
-# Pandas lets you use the mean and standard deviation of each column.
-# IMPORTANT! We used population standard deviation (that's what the ddof=0 means), otherwise you might get different results.
-
-features_stscaled = (df_features - df_features.mean()) / \
-    df_features.std(ddof=0)
-
-features_stscaled['round'] = df_labels.values
-
-D3 = features_stscaled
-
-print("\nThese are the dataset's features, normalized by Standard Scaling(D3):'\n")
-print(features_stscaled)
+print("\nStandard Scaled Dataset (D3):")
+print(D3.head())
 
 
 print("\n-----------------------------------PART 2: CLASSIFICATION-------------------------------------------")
