@@ -111,9 +111,19 @@ print("\nD3 Predictions (First 20):")
 print(pred_d3[:20])
 
 # Generating confusion matrices for each
+# Added accuracy scores for each dataset to evaluate the performance of the KNN model
 cm_d1 = confusion_matrix(y_test_d1, pred_d1)
 cm_d2 = confusion_matrix(y_test_d2, pred_d2)
 cm_d3 = confusion_matrix(y_test_d3, pred_d3)
+
+acc_d1 = accuracy_score(y_test_d1, pred_d1)
+acc_d2 = accuracy_score(y_test_d2, pred_d2)
+acc_d3 = accuracy_score(y_test_d3, pred_d3)
+
+print("\nKNN Accuracy:")
+print("D1:", acc_d1)
+print("D2:", acc_d2)
+print("D3:", acc_d3)
 
 # Get the unique class labels (e.g., 'First', 'Second') to label the boxes
 labels = knn1.classes_
@@ -191,9 +201,19 @@ print("\nD3 Random Forest Predictions (First 20):")
 print(pred_rf_d3[:20])
 
 # Generating confusion matrices for each
+# Added accuracy scores for each dataset to evaluate the performance of the KNN model
 cm_rf_d1 = confusion_matrix(y_test_d1, pred_rf_d1)
 cm_rf_d2 = confusion_matrix(y_test_d2, pred_rf_d2)
 cm_rf_d3 = confusion_matrix(y_test_d3, pred_rf_d3)
+
+acc_rf_d1 = accuracy_score(y_test_d1, pred_rf_d1)
+acc_rf_d2 = accuracy_score(y_test_d2, pred_rf_d2)
+acc_rf_d3 = accuracy_score(y_test_d3, pred_rf_d3)
+
+print("\nRandom Forest Accuracy:")
+print("D1:", acc_rf_d1)
+print("D2:", acc_rf_d2)
+print("D3:", acc_rf_d3)
 
 # Get the unique class labels (e.g., 'First', 'Second') to label the boxes
 labels = rf1.classes_
@@ -218,6 +238,7 @@ sns.heatmap(cm_rf_d3, annot=True, fmt='d', cmap='Oranges',
 axes[2].set_title('D3 (Standard Scaled) - Random Forest')
 axes[2].set_xlabel('Predicted Label')
 axes[2].set_ylabel('True Label')
+
 
 # Display the graphics
 plt.tight_layout()
