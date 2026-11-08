@@ -61,41 +61,35 @@ print("\n-----------------------------------PART 2: CLASSIFICATION--------------
 # Running K Nearest Neighbors:
 # We will use k=3, since it performed the best during our testing (using elbow method to check)
 
-print("\n K Nearest Neighbors (k=3)")
+# SPLIT FIRST, then scale using the training data only
+X_raw = df.iloc[:, :-1]
+y_raw = df.iloc[:, -1]
 
-# D1 (Original)
-X_d1 = D1.iloc[:, :-1]
-y_d1 = D1.iloc[:, -1]
-
-# Split into training and testing sets
-# Added startify=y_dx to all training sets 
-# to ensure that the class distribution is preserved in both training and testing sets
+# D1 (Original): split once
 X_train_d1, X_test_d1, y_train_d1, y_test_d1 = train_test_split(
-    X_d1, y_d1, test_size=0.2, random_state=42, stratify=y_d1)
+    X_raw, y_raw, test_size=0.2, random_state=42, stratify=y_raw)
+
+# D2 (Min-Max): scaler learns from the TRAINING set only
+mm = MinMaxScaler().fit(X_train_d1)
+X_train_d2 = mm.transform(X_train_d1)
+X_test_d2 = mm.transform(X_test_d1)
+y_train_d2, y_test_d2 = y_train_d1, y_test_d1
+
+# D3 (Standard): scaler learns from the TRAINING set only
+ss = StandardScaler().fit(X_train_d1)
+X_train_d3 = ss.transform(X_train_d1)
+X_test_d3 = ss.transform(X_test_d1)
+y_train_d3, y_test_d3 = y_train_d1, y_test_d1
+
+print("\n K Nearest Neighbors (k=3)")
 
 knn1 = KNeighborsClassifier(n_neighbors=3)
 knn1.fit(X_train_d1, y_train_d1)        # Train only on the training set
 pred_d1 = knn1.predict(X_test_d1)       # Predict only on the testing set
 
-
-# D2 (Min-Max Scaled)
-X_d2 = D2.iloc[:, :-1]
-y_d2 = D2.iloc[:, -1]
-
-X_train_d2, X_test_d2, y_train_d2, y_test_d2 = train_test_split(
-    X_d2, y_d2, test_size=0.2, random_state=42, stratify=y_d2)
-
 knn2 = KNeighborsClassifier(n_neighbors=3)
 knn2.fit(X_train_d2, y_train_d2)
 pred_d2 = knn2.predict(X_test_d2)
-
-
-# D3 (Standard Scaled)
-X_d3 = D3.iloc[:, :-1]
-y_d3 = D3.iloc[:, -1]
-
-X_train_d3, X_test_d3, y_train_d3, y_test_d3 = train_test_split(
-    X_d3, y_d3, test_size=0.2, random_state=42, stratify=y_d3)
 
 knn3 = KNeighborsClassifier(n_neighbors=3)
 knn3.fit(X_train_d3, y_train_d3)
