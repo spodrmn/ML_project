@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
 import seaborn as sns
@@ -11,10 +10,6 @@ from sklearn.metrics import confusion_matrix
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
-from sklearn.pipeline import make_pipeline
-from sklearn.model_selection import RepeatedStratifiedKFold, cross_val_score
-from sklearn.metrics import classification_report, f1_score
-
 
 print("-----------------------------------PART 1: NORMALIZATION-------------------------------------------")
 
