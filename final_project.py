@@ -72,38 +72,47 @@ X_d1 = D1.iloc[:, :-1]
 y_d1 = D1.iloc[:, -1]
 
 # Split into training and testing sets
-# Added stratify=y_dx to all training sets 
+# Added stratify=y_dx to all training sets
 # to ensure that the class distribution is preserved in both training and testing sets
 X_train_d1, X_test_d1, y_train_d1, y_test_d1 = train_test_split(
     X_d1, y_d1, test_size=0.2, random_state=42, stratify=y_d1)
 
-knn1 = GridSearchCV(KNeighborsClassifier(), {'n_neighbors': [1, 3, 5, 7, 9, 11]}, cv=5)
+knn1 = GridSearchCV(KNeighborsClassifier(), {
+                    'n_neighbors': [1, 3, 5, 7, 9, 11]}, cv=5)
 knn1.fit(X_train_d1, y_train_d1)
 pred_d1 = knn1.predict(X_test_d1)
 print("D1 best k:", knn1.best_params_['n_neighbors'])
 
 
 # D2 (Min-Max Scaled)
-X_d2 = D2.iloc[:, :-1]
-y_d2 = D2.iloc[:, -1]
+# Scale the D1 splits here to prevent data leakage (fitting ONLY on training data)
+minmax_clf_knn = MinMaxScaler()
+X_train_d2 = pd.DataFrame(minmax_clf_knn.fit_transform(
+    X_train_d1), columns=X_train_d1.columns)
+X_test_d2 = pd.DataFrame(minmax_clf_knn.transform(
+    X_test_d1), columns=X_test_d1.columns)
+y_train_d2 = y_train_d1
+y_test_d2 = y_test_d1
 
-X_train_d2, X_test_d2, y_train_d2, y_test_d2 = train_test_split(
-    X_d2, y_d2, test_size=0.2, random_state=42, stratify=y_d2)
-
-knn2 = GridSearchCV(KNeighborsClassifier(), {'n_neighbors': [1, 3, 5, 7, 9, 11]}, cv=5)
+knn2 = GridSearchCV(KNeighborsClassifier(), {
+                    'n_neighbors': [1, 3, 5, 7, 9, 11]}, cv=5)
 knn2.fit(X_train_d2, y_train_d2)
 pred_d2 = knn2.predict(X_test_d2)
 print("D2 best k:", knn2.best_params_['n_neighbors'])
 
 
 # D3 (Standard Scaled)
-X_d3 = D3.iloc[:, :-1]
-y_d3 = D3.iloc[:, -1]
+# Apply the same as D2 to prevent leakage
+std_clf_knn = StandardScaler()
+X_train_d3 = pd.DataFrame(std_clf_knn.fit_transform(
+    X_train_d1), columns=X_train_d1.columns)
+X_test_d3 = pd.DataFrame(std_clf_knn.transform(
+    X_test_d1), columns=X_test_d1.columns)
+y_train_d3 = y_train_d1
+y_test_d3 = y_test_d1
 
-X_train_d3, X_test_d3, y_train_d3, y_test_d3 = train_test_split(
-    X_d3, y_d3, test_size=0.2, random_state=42, stratify=y_d3)
-
-knn3 = GridSearchCV(KNeighborsClassifier(), {'n_neighbors': [1, 3, 5, 7, 9, 11]}, cv=5)
+knn3 = GridSearchCV(KNeighborsClassifier(), {
+                    'n_neighbors': [1, 3, 5, 7, 9, 11]}, cv=5)
 knn3.fit(X_train_d3, y_train_d3)
 pred_d3 = knn3.predict(X_test_d3)
 print("D3 best k:", knn3.best_params_['n_neighbors'])
@@ -171,30 +180,36 @@ y_d1 = D1.iloc[:, -1]
 X_train_d1, X_test_d1, y_train_d1, y_test_d1 = train_test_split(
     X_d1, y_d1, test_size=0.2, random_state=42, stratify=y_d1)
 
-print("Baseline accuracy (always guess the biggest class):", y_test_d1.value_counts(normalize=True).max())
+print("Baseline accuracy (always guess the biggest class):",
+      y_test_d1.value_counts(normalize=True).max())
 
 rf1 = RandomForestClassifier(random_state=42)
 rf1.fit(X_train_d1, y_train_d1)
 pred_rf_d1 = rf1.predict(X_test_d1)
 
 # D2 (Min-Max Scaled) - Random Forest
-X_d2 = D2.iloc[:, :-1]
-y_d2 = D2.iloc[:, -1]
-
-X_train_d2, X_test_d2, y_train_d2, y_test_d2 = train_test_split(
-    X_d2, y_d2, test_size=0.2, random_state=42, stratify=y_d2)
+# Scale after splitting to prevent leakage
+minmax_clf_rf = MinMaxScaler()
+X_train_d2 = pd.DataFrame(minmax_clf_rf.fit_transform(
+    X_train_d1), columns=X_train_d1.columns)
+X_test_d2 = pd.DataFrame(minmax_clf_rf.transform(
+    X_test_d1), columns=X_test_d1.columns)
+y_train_d2 = y_train_d1
+y_test_d2 = y_test_d1
 
 rf2 = RandomForestClassifier(random_state=42)
 rf2.fit(X_train_d2, y_train_d2)
 pred_rf_d2 = rf2.predict(X_test_d2)
 
 # D3 (Standard Scaled) - Random Forest
-
-X_d3 = D3.iloc[:, :-1]
-y_d3 = D3.iloc[:, -1]
-
-X_train_d3, X_test_d3, y_train_d3, y_test_d3 = train_test_split(
-    X_d3, y_d3, test_size=0.2, random_state=42, stratify=y_d3)
+# Scale after splitting to prevent leakage
+std_clf_rf = StandardScaler()
+X_train_d3 = pd.DataFrame(std_clf_rf.fit_transform(
+    X_train_d1), columns=X_train_d1.columns)
+X_test_d3 = pd.DataFrame(std_clf_rf.transform(
+    X_test_d1), columns=X_test_d1.columns)
+y_train_d3 = y_train_d1
+y_test_d3 = y_test_d1
 
 rf3 = RandomForestClassifier(random_state=42)
 rf3.fit(X_train_d3, y_train_d3)
@@ -231,7 +246,8 @@ results = pd.DataFrame({
 print("\nAll models (best first):")
 print(results.sort_values("Accuracy", ascending=False))
 best = results.sort_values("Accuracy", ascending=False).iloc[0]
-print("\nRecommended model:", best["Model"], "| Accuracy:", round(best["Accuracy"], 3))
+print("\nRecommended model:", best["Model"],
+      "| Accuracy:", round(best["Accuracy"], 3))
 
 # Get the unique class labels (e.g., 'First', 'Second') to label the boxes
 labels = rf1.classes_
@@ -284,7 +300,7 @@ for k in K_range:
     if sil_score > best_sil_score_d1:
         best_sil_score_d1 = sil_score
         best_k_d1 = k
-        
+
 plt.figure(figsize=(10, 4))
 plt.subplot(1, 2, 1)
 plt.plot(K_range, inertias_d1, marker='o')
