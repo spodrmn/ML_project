@@ -19,3 +19,11 @@ Make sure both of these files are saved in the exact same folder:
 When you run the code, some results will appear right in the terminal (like the accuracy scores and best k values) and some will appear as popups (like the graphs and confusion matrices). 
 
 Important: you have to close the graphs' popups for the other part of the code to show. The script actually pauses when a plot opens, so just exit out of the graph window when you are done looking at it to let the rest of the code finish running in the terminal.
+
+## Authors
+* Ethan Lawrence Cimafranca
+* Evonne Alessandra Contreras
+* Sean Dominic Yap
+
+## Section
+* CSCI 111 - YZW
