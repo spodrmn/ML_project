@@ -397,3 +397,36 @@ print(
 print(
     f"Optimal 'k' for D3 (Standard Scaled):  {best_k_d3} (Silhouette Score: {best_sil_score_d3:.4f})")
 print("\n------------------------------------------------------------------------------------------------------")
+
+
+print("\n------------------------- PART 4: INSIGHTS, CONCLUSIONS & RECOMMENDATIONS -------------------------")
+print("""
+[ RESULTS ]
+- Best Classification: KNN with Min-Max scaling (D2) achieved the highest accuracy at 61.34%, 
+  providing a ~6% lift over the baseline majority guess (55.46%). Random Forest peaked on unscaled data (58.82%).
+- Best Clustering: K-Means consistently identified K=2 as the optimal cluster count across all datasets. 
+  While D1 had a massive silhouette score (0.7070), D2 and D3 stabilized around 0.46.
+
+[ ANALYSIS & INSIGHTS ]
+- Min-Max scaling significantly improved KNN because it relies on Euclidean distance; 
+  without it, high-volume stats overpower efficiency stats. On the other hand, Random Forest is tree-based 
+  and scale-invariant, which is why normalization did not improve its performance.
+- D1's high silhouette score is caused by unscaled 
+  volume metrics pulling players far apart. D2's score of ~0.46 represents a much more mathematically 
+  sound grouping of players.
+- The max accuracy of 61.3% proves that final career stats do not cleanly 
+  separate into 1st/2nd round buckets. This highlights the unpredictability of the NBA draft, where 
+  second-round players who overperform heavily blur the model's decision boundaries. 
+  - e.g., Nikola Jokic (41st pick): 3x MVP, Finals MVP, 8x All-Star
+  - e.g., Jalen Brunson (33rd pick): All-NBA, All-Star
+  - e.g., Manu Ginobili (57th pick): Hall of Famer, 4x Champion
+
+[ RECOMMENDATIONS FOR FUTURE WORK ]
+1. Transition from raw totals to "rate" statistics (Points Per Minute, 
+   Assist-to-Turnover Ratio, True Shooting %) which account for varying playing time and hold stronger signals.
+2. Run a broader GridSearch on Random Forest (tuning n_estimators, max_depth, 
+   min_samples_split) and test different distance metrics (Manhattan vs. Euclidean) for KNN.
+3. Try other algorithms: Algorithms like XGBoost, LightGBM, or CatBoost build trees sequentially 
+   (learning from previous errors) and consistently outperform Random Forest on tabular data.
+---------------------------------------------------------------------------------------------------
+""")
